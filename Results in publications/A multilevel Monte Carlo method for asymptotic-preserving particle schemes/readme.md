@@ -1,10 +1,10 @@
 In order to generate the in the tables in the paper from scratch, use the following commands for, respectively, Tables 1-3 and 5-7:
-python3 squared_displacement_geometric_levels 0.1 0.1 40
-python3 squared_displacement_geometric_levels 0.1 0.01 500
-python3 squared_displacement_geometric_levels 0.1 0.001 1000
-python3 squared_displacement_coarse_level 0.1 0.1 40
-python3 squared_displacement_coarse_level 0.1 0.01 500
-python3 squared_displacement_coarse_level 0.1 0.001 1000
+* python3 squared_displacement_geometric_levels 0.1 0.1 40
+* python3 squared_displacement_geometric_levels 0.1 0.01 500
+* python3 squared_displacement_geometric_levels 0.1 0.001 1000
+* python3 squared_displacement_coarse_level 0.1 0.1 40
+* python3 squared_displacement_coarse_level 0.1 0.01 500
+* python3 squared_displacement_coarse_level 0.1 0.001 1000
 
 The provided parameters are epsilon, the RMSE and initial samples per level. Note that some simulations will take a long time, especially for small RMSE. For this reason you can also find .chk files for each simulation as performed when preparing the paper.
 
