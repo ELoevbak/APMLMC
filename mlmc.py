@@ -25,7 +25,6 @@ import numpy as np
 import math
 import pickle
 import time
-
 def MLMC_sim(levels, fcn, cost_fcn, alpha, epsilon, default_samples=50, max_work=5000, seed=None, convergence_fcn=None, checkpoint=None):
     """A function for Multilevel Monte Carlo simulation.
     Variable types:
@@ -59,8 +58,9 @@ def MLMC_sim(levels, fcn, cost_fcn, alpha, epsilon, default_samples=50, max_work
         data = load_checkpoint(checkpoint)
 
     while(not converged(data, convergence_fcn)):
-        print("Adding level number " + str(data.num_levels))
-        data.add_level(default_samples, cost_fcn)
+        if(data._last_sampled_level == -1):
+            print("Adding level number " + str(data.num_levels))
+            data.add_level(default_samples, cost_fcn)
         print("Updating samples to the distribution: " + str(data._opt_samples))
         data.generate_samples(fcn)
         if not data.update_opt_samples():
@@ -76,6 +76,11 @@ def converged(data, convergence_fcn):
     """Tests the provided simulation data against the weak convergence criterion in Mike Giles, Acta Numerica, unless another 
        function is given.
     """
+
+    # Some tests below do not work if loading a checkpoint
+    if data._last_sampled_level != -1:
+        return False
+
     if convergence_fcn is None:
         # First check if we have done too much work
         if data.total_work >= data.max_work or min(data._opt_samples) < 0:
@@ -128,6 +133,8 @@ class MLMC_data:
         _sum_squares: A list of the sums of squares of the samples generated at each level.
         _diff_samples: A list of the differences of samples generated in correlated simulations at each level (Y_L).
         _diff_squares: Squares of the differences mentioned in the line above.
+        _last_sampled_level: An integer value indicating at what level the last samples were generated. Used when
+                             restarting from a checkpoint to determine where the previous simulation stopped.
     For type information of the last four see the documentation of MLMC_sim.
     """
 
@@ -144,6 +151,7 @@ class MLMC_data:
         self._sum_squares = [0]*self.num_levels
         self._diff_samples = [0]*self.num_levels
         self._diff_squares = [0]*self.num_levels
+        self._last_sampled_level = -1
 
     def mean(self, level=None):
         """Returns the means of the sampled QOI's ath the requested level.
@@ -189,7 +197,7 @@ class MLMC_data:
         """Returns the sum of the means of the differences of the sampled QOI's up to the requested level."""
 
         if level is None:
-            return [self.diff_mean(i) for i in range(0, self.num_levels)]
+            return [self.telescopic_sum(i) for i in range(0, self.num_levels)]
         else:
             telescopic_sum_result = 0
             for i in range(min(self.num_levels, level+1)):
@@ -263,8 +271,12 @@ class MLMC_data:
         """
 
         if (level is None):
-            for i in range(0, self.num_levels):
+            # Unlest restarting from a checkpoint, _last_sampled_level will have value -1
+            for i in range(self._last_sampled_level+1, self.num_levels):
                 self.generate_samples(fcn, i)
+                self._last_sampled_level = i
+                save_checkpoint(self)
+            self._last_sampled_level = -1
         else:
             # Number of new samples needed
             new_samples = self._opt_samples[level] - self.samples[level]

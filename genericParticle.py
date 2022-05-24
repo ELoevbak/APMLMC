@@ -55,10 +55,10 @@ def make_correlated_time_steps(particles, delta_t_fine, delta_t_coarse, epsilon,
         correlation_type: A string indicating how to correlate simulations.
     """
 
-    random_numbers = [()]*len(particles[0])
+    M = int(delta_t_coarse / delta_t_fine)
+    random_numbers = [[() for j in range(M)] for i in range(len(particles[0]))]
 
     # This block computes a bunch of constants from the matching papers
-    M = int(delta_t_coarse / delta_t_fine)
     p_nc = epsilon**2/(delta_t_fine+epsilon**2)
     p_c = 1-p_nc
     vc_fine = epsilon / (delta_t_fine+epsilon**2)
@@ -74,11 +74,11 @@ def make_correlated_time_steps(particles, delta_t_fine, delta_t_coarse, epsilon,
         D_coarse/V_sum_variance*V_sum_product_expectation**2
     theta = C2_1 / (C2_1 + C2_2)
 
-    for i in range(0, len(particles[0])):
+    for i in range(len(particles[0])):
         particle = particles[0][i]
-        for _ in range(0, M):
-            random_numbers[i] += (particle.make_time_step(delta_t_fine, epsilon, boundary_L, boundary_R, boundary_type_L,
-                                                          boundary_type_R, None, None, M, theta),)
+        for j in range(M):
+            random_numbers[i][j] = particle.make_time_step(delta_t_fine, epsilon, boundary_L, boundary_R, boundary_type_L,
+                                                           boundary_type_R, None, None, M, theta)
         particle = particles[1][i]
         particle.make_correlated_big_step(delta_t_coarse, epsilon, boundary_L, boundary_R, boundary_type_L, boundary_type_R,
                                           random_numbers[i], V_sum_variance, correlation_type, theta)

@@ -1,6 +1,7 @@
 #General
 *~
 .vscode
+.DS_Store
 
 #Python
 *.pyc
