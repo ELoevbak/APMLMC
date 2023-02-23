@@ -10,6 +10,8 @@ Publications making use of this code are:
 
 In the sub-folder "Results in publications", you can scripts and data corresponding with 
 * E. Løvbak, G. Samaey, S. Vandewalle, A multilevel Monte Carlo method for asymptotic-preserving particle schemes. Numerische Mathematik 148, 141--186. (2021)  
-* E. Løvbak, G. Samaey, Accelerated simulation of Boltzmann-BGK equations near the diffusive limit with asymptotic-preserving multilevel Monte Carlo. Submitted. (2022) arXiv:2205.12130
+* E. Løvbak, G. Samaey, Accelerated simulation of Boltzmann-BGK equations 
+near the diffusive limit with asymptotic-preserving multilevel Monte 
+Carlo. SIAM Journal on Scientific Computing, In review. (2022) pre-print available at arXiv:2205.12130
  
 If you find this code useful for your work, please consider citing the relevant articles.
